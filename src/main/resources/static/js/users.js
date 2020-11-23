@@ -204,6 +204,7 @@ function addUserClick() {
     let mailNickname = getInput("#addMailNickname");
     let domain = getSelect("#addDomainSelect");
     let password = getInput("#addPassword");
+    let mailbox = getInput("#addMail");
     // 参数校验
 
 
@@ -217,24 +218,27 @@ function addUserClick() {
             "skuId": skuId,
             "mailNickname": mailNickname,
             "domain": domain,
-            "password": password
+            "password": password,
+            "mailbox": mailbox
         },
         dataType: "json",
         success: function (r) {
             if (r.status !== 200) {
+                lightyear.loading('hide');
                 lightyear.notify(r.message, 'danger', delay);
             } else {
                 console.log(r);
                 let userInfo = '名称：' + r.data.displayName + '<br>账号：' + r.data.userPrincipalName + '<br>密码：' + r.data.password;
                 lightyear.loading('hide');
                 $.alert({
-                    title: '添加成功',
+                    title: '添加成功；请刷新缓存！',
                     content: '新增账号成功：<br><br><strong>' + userInfo + '</strong><br><br>',
                     buttons: {
                         confirm: {
                             text: '确认',
                             btnClass: 'btn-primary',
                             action: function () {
+                                window.location.reload();
                             }
                         }
                     }
@@ -272,6 +276,36 @@ function addLicenseClick() {
                 console.log(r);
                 lightyear.loading('hide');
                 lightyear.notify("添加许可证成功！", 'success', delay)
+            }
+        },
+        error: function () {
+            /*错误信息处理*/
+            lightyear.notify("服务器错误，请稍后再试~", 'danger', delay);
+            lightyear.loading('hide');
+        }
+    });
+}
+
+function cancelLicenseClick() {
+    lightyear.loading('show');
+    let userId = $('#disLicenseSelectModalUserId').html();
+    // 提交请求
+    $.ajax({
+        type: "post",
+        url: path + "/cancelLicense",
+        data: {
+            "appName": getAppName(),
+            "userId": userId
+        },
+        dataType: "json",
+        success: function (r) {
+            if (r.status !== 200) {
+                lightyear.loading('hide');
+                lightyear.notify(r.message, 'danger', delay);
+            } else {
+                console.log(r);
+                lightyear.loading('hide');
+                lightyear.notify("取消许可证成功！", 'success', delay)
             }
         },
         error: function () {
@@ -369,6 +403,7 @@ function deletedUserClick(userId) {
 }
 
 function addUserBatchClick() {
+    lightyear.loading('show');
     let num = $("#addUserBatchNum").val();
     let skuId = getSelect("#licenseSelectModalBatch");
     let domain = getSelect("#domainSelectModalBatch");
@@ -469,11 +504,13 @@ function checkBoxClick(data) {
         $('#disableAccount').removeClass("disabled");
         $('#deletedAccount').removeClass("disabled");
         $('#addLicenseAccount').removeClass("disabled");
+        $('#disLicenseAccount').removeClass("disabled");
     } else {
         $('#enableAccount').addClass("disabled");
         $('#disableAccount').addClass("disabled");
         $('#deletedAccount').addClass("disabled");
         $('#addLicenseAccount').addClass("disabled");
+        $('#disLicenseAccount').addClass("disabled");
     }
 
 }

@@ -16,8 +16,11 @@
 - 许可查询：查询每个订阅的许可证信息
 - 用户管理：查询，新增，删除，分配许可证等
 - 多账户切换
+- **新增登陆功能（需要在配置文件中配置账号和密码）**
+- **新增Docker启动方式**
+- 增加发送账号密码到指定邮箱功能(需要修改配置文件)
 
-**注意：出现执行新增/删除账户，启用禁用账户，授权账户等操作后，查询结果不变，请右上角点击刷新缓存，或列表中搜索该用户**
+<font color="#ff0000"> **注意：出现执行新增/删除账户，启用禁用账户，授权账户等操作后，查询结果不变，请右上角点击刷新缓存，或列表中搜索该用户** </font>
 
 原因：调用微软API比较耗时，第一次查询时将需要的数据拉取到本地缓存（暂无自定义缓存失效功能，默认用户1天，域名1天，订阅30天）。
 
@@ -25,13 +28,30 @@
 
 ## 运行
 
-下载最新版本的额jar包，然后在同目录新建config目录，下载 [application-dev.yml](https://github.com/6mb/Microsoft-365-Admin/blob/master/src/main/resources/config/application-dev.yml)文件放到该目录。
+#### 存在Java环境的情况下
+下载最新版本的`jar`包，然后在同目录新建config目录，下载 [application-dev.yml](https://github.com/6mb/Microsoft-365-Admin/blob/master/src/main/resources/config/application-dev.yml)文件放到该目录。
 
 按照格式修改配置文件
 
-java -jar microsoft-0.0.1-SNAPSHOT.jar 启动，端口：8099
+执行 `java -jar microsoft-0.0.1-SNAPSHOT.jar` 启动，端口：8099
 
-### 注意：如果非本机部署（不建议部署到公网，没有登陆功能），请将前端文件单独部署并修改config.js中的请求地址。
+#### Docker 安装 （推荐）
+
+
+然后下载 [application-dev.yml](https://github.com/6mb/Microsoft-365-Admin/blob/master/src/main/resources/config/application-dev.yml)文件放到config目录。
+
+按照格式修改配置文件
+
+```shell script
+docker pull logr/microsoft:latest
+
+docker run -d --name=microsoft-admin \
+    -p 8099:8099 \
+    -v /home/microsoft/config:/config \
+    logr/microsoft:latest
+```
+
+### 注意：如果前端文件单独部署（~~不建议部署到公网，没有登陆功能~~），请并修改config.js中的请求地址。
 
 
 ## 界面
@@ -48,6 +68,7 @@ java -jar microsoft-0.0.1-SNAPSHOT.jar 启动，端口：8099
 
 [接口文档](https://github.com/6mb/Microsoft-365-Admin/blob/master/Microsoft%20365%20Admin.md)
 
+- 登陆
 - Microsoft 365 首页
     - 首页展示
     - 刷新缓存
